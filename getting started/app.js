@@ -21,11 +21,13 @@ const server = http.createServer((request, response) => {
 
   	request.on('end', () => {
   		const parsedData = Buffer.concat(data).toString();
-  		fs.writeFileSync('data.txt', parsedData);
-  		response.statusCode = 200;
-	  	response.setHeader('Content-Type', 'text/html');
-	  	response.write('<h1>Your data has been recorded.</h1>');
-	  	response.end();
+  		fs.writeFile('data.txt', parsedData, (error) => {
+  			response.statusCode = 200;
+		  	response.setHeader('Content-Type', 'text/html');
+		  	response.write('<h1>Your data has been recorded.</h1>');
+		  	response.end();
+  		});
+  		
   	});
   }
 });
@@ -36,7 +38,7 @@ server.listen(5000, () => {
 
 function getLoginForm() {
   return `<html>
-		 	<head><title>Login</title></head>
+	 		<head><title>Login</title></head>
 		 	<body><form action="/auth" method="POST">
 		 	<label>Username: </label> <input type="text" name="username" required/><br/>
 		 	<label>Password: </label> <input type="password" name="password" required/><br/>
