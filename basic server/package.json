@@ -1,0 +1,15 @@
+{
+  "name": "basic-server",
+  "version": "1.0.0",
+  "description": "This is a basic node server which will save username and password to a text file.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "author": "Shivam",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
