@@ -3,9 +3,9 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 // custom imports
-const user = require("./routes/user");
-const admin = require("./routes/admin");
-const shop = require("./routes/shop");
+const userRoutes = require("./routes/user");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 const rootDirName = require("./utils/path");
 
@@ -17,9 +17,9 @@ app.use(express.static(path.join(rootDirName, "public")));
 // setting up body parser (extended: to choose between querystring lib or qs lib to parse the data)
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use("/user", user.routes);
-app.use("/admin", admin.routes);
-app.use(shop.routes);
+app.use("/user", userRoutes);
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
 
 app.listen(5000, () => {
   console.log("Server Started...");
