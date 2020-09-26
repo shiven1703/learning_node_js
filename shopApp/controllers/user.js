@@ -1,15 +1,11 @@
 const User = require("../Models/user");
 
 exports.getLoginPage = (req, res) => {
-  res.render("login", { pageTitle: "Login" });
+  res.render("user/login", { pageTitle: "Login" });
 };
 
 exports.getRegisterPage = (req, res) => {
-  res.render("register", { pageTitle: "Register" });
-};
-
-exports.getAddProductPage = (req, res) => {
-  res.render("addProduct", { pageTitle: "Add Product" });
+  res.render("user/register", { pageTitle: "Register" });
 };
 
 exports.getErrorPage = (req, res) => {

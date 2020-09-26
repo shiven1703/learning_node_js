@@ -8,12 +8,10 @@ router.get("/login", userController.getLoginPage);
 
 router.get("/register", userController.getRegisterPage);
 
+router.get("/error", userController.getErrorPage);
+
 router.post("/auth", userController.auth);
 
 router.post("/registerNewUser", userController.registerNewUser);
-
-router.get("/error", userController.getErrorPage);
-
-router.get("/account", userController.getAddProductPage);
 
 module.exports = router;
