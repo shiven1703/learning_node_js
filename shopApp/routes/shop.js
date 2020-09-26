@@ -1,12 +1,13 @@
 const express = require("express");
 
-const admin = require("./../routes/admin");
-
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const products = await admin.getAllProducts();
-  res.render("shop", { pageTitle: "Home", productList: products });
-});
+const productController = require("./../controllers/product");
+const errorController = require("./../controllers/error");
 
-exports.routes = router;
+router.get("/", productController.getShopPageProducts);
+
+// executes for 404 error
+router.use(errorController.get404Page);
+
+module.exports = router;

@@ -1,80 +1,19 @@
-const path = require("path");
-const fs = require("fs");
-
 const express = require("express");
-const User = require("../Models/user");
 
 const router = express.Router();
-const rootDirName = require("../utils/path");
 
-router.get("/login", (req, res) => {
-  res.render("login", { pageTitle: "Login" });
-});
+const userController = require("./../controllers/user");
 
-router.post("/auth", async (req, res) => {
-  let isRegistered = await authenticateUser(req.body.email, req.body.password);
-  if (isRegistered === true) {
-    res.status(301).redirect("/");
-  } else {
-    res.status(301).redirect("/user/error");
-  }
-});
+router.get("/login", userController.getLoginPage);
 
-router.get("/register", (req, res) => {
-  res.render("register", { pageTitle: "Register" });
-});
+router.get("/register", userController.getRegisterPage);
 
-router.post("/registerNewUser", async (req, res) => {
-  const newUser = new User(req.body.name, req.body.email, req.body.password);
-  await addNewUser(newUser);
-  res.status(301).redirect("/");
-});
+router.post("/auth", userController.auth);
 
-router.get("/error", (req, res) => {
-  res.render("error", { pageTitle: "Error" });
-});
+router.post("/registerNewUser", userController.registerNewUser);
 
-router.get("/account", (req, res) => {
-  res.render("addProduct", { pageTitle: "Add Product" });
-});
-// custom functions
-function addNewUser(newUser) {
-  return new Promise(async (resolve, rejects) => {
-    let existingUsers = [];
-    existingUsers = await getAllUsers();
-    existingUsers.push(newUser);
-    resolve(existingUsers);
-  }).then((updatedUserList) => {
-    return new Promise((resolve, rejects) => {
-      fs.writeFile(
-        path.join(rootDirName, "data", "users.txt"),
-        JSON.stringify(updatedUserList),
-        (err) => {
-          resolve();
-        }
-      );
-    });
-  });
-}
-function getAllUsers() {
-  return new Promise((resolve, rejects) => {
-    fs.readFile(path.join(rootDirName, "data", "users.txt"), (err, data) => {
-      const Users = JSON.parse(data);
-      resolve(Users);
-    });
-  });
-}
-async function authenticateUser(email, password) {
-  let isFound = false;
-  const userList = await getAllUsers();
-  for (user of userList) {
-    if (user.email === email && user.password === password) {
-      isFound = true;
-      break;
-    }
-  }
-  return isFound;
-}
+router.get("/error", userController.getErrorPage);
 
-exports.routes = router;
-exports.getAllUsers = getAllUsers;
+router.get("/account", userController.getAddProductPage);
+
+module.exports = router;
