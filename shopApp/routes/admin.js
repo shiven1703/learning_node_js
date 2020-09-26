@@ -3,7 +3,7 @@ const fs = require("fs");
 
 const express = require("express");
 
-const Product = require("./../Models/product");
+const Product = require("../Models/product");
 
 const router = express.Router();
 const rootDirName = require("../utils/path");
@@ -36,7 +36,6 @@ function addNewProduct(Newproduct) {
     });
   });
 }
-
 function getAllProducts() {
   return new Promise((resolve, rejects) => {
     fs.readFile(path.join(rootDirName, "data", "products.txt"), (err, data) => {
@@ -46,4 +45,5 @@ function getAllProducts() {
   });
 }
 
-module.exports = router;
+exports.routes = router;
+exports.getAllProducts = getAllProducts;

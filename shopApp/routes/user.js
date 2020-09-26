@@ -8,7 +8,7 @@ const router = express.Router();
 const rootDirName = require("../utils/path");
 
 router.get("/login", (req, res) => {
-  res.sendFile(path.join(rootDirName, "views", "login.html"));
+  res.render("login", { pageTitle: "Login" });
 });
 
 router.post("/auth", async (req, res) => {
@@ -21,7 +21,7 @@ router.post("/auth", async (req, res) => {
 });
 
 router.get("/register", (req, res) => {
-  res.sendFile(path.join(rootDirName, "views", "register.html"));
+  res.render("register", { pageTitle: "Register" });
 });
 
 router.post("/registerNewUser", async (req, res) => {
@@ -31,11 +31,11 @@ router.post("/registerNewUser", async (req, res) => {
 });
 
 router.get("/error", (req, res) => {
-  res.sendFile(path.join(rootDirName, "views", "error.html"));
+  res.render("error", { pageTitle: "Error" });
 });
 
 router.get("/account", (req, res) => {
-  res.sendFile(path.join(rootDirName, "views", "addProduct.html"));
+  res.render("addProduct", { pageTitle: "Add Product" });
 });
 // custom functions
 function addNewUser(newUser) {
@@ -76,4 +76,5 @@ async function authenticateUser(email, password) {
   return isFound;
 }
 
-module.exports = router;
+exports.routes = router;
+exports.getAllUsers = getAllUsers;
