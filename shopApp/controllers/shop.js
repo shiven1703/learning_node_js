@@ -5,12 +5,16 @@ exports.getShopHomePage = async (req, res) => {
   res.render("shop/index", { pageTitle: "Home", productList: products });
 };
 
-exports.getProductsPage = (req, res) => {
-  res.render("shop/productList", { pageTitle: "Products" });
+exports.getProductsPage = async (req, res) => {
+  const products = await Product.getAllProducts();
+  res.render("shop/productList", {
+    pageTitle: "Products",
+    productList: products,
+  });
 };
 
-exports.getCartPage = (req, res) => {
-  res.render("shop/cart", { pageTitle: "Cart" });
+exports.getOrdersPage = (req, res) => {
+  res.render("shop/orders", { pageTitle: "Orders" });
 };
 
 exports.getCheckoutPage = (req, res) => {
