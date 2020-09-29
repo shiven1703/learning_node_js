@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("fs").promises;
 const path = require("path");
 
 const Product = require("./../Models/product");
@@ -6,17 +6,19 @@ const rootDirName = require("../utils/path");
 const { resolve } = require("path");
 
 class Cart {
-  static async addProduct(productId, productPrice) {
-    const cartData = await getCartDataFromFile();
-    // checking if product is already present in cart or not
-    const productIndex = await Cart.getProductIndexById(productId);
+  static async addProduct(productId) {
+    const [cartData, productIndex] = await Promise.all([
+      getCartDataFromFile(),
+      // checking if product is already present in cart or not
+      Cart.getProductIndexById(productId),
+    ]);
     if (productIndex === -1) {
       cartData.products.push({ pid: productId, qty: 1 });
     } else {
       cartData.products[productIndex].qty =
         cartData.products[productIndex].qty + 1;
     }
-    saveCartDataToFile(cartData);
+    await saveCartDataToFile(cartData);
   }
 
   static async removeProductFromCart(productId) {
@@ -42,8 +44,10 @@ class Cart {
   }
 
   static async getAllProductsFromCart() {
-    const cartData = await getCartDataFromFile();
-    const products = await Product.getAllProducts();
+    const [cartData, products] = await Promise.all([
+      getCartDataFromFile(),
+      Product.getAllProducts(),
+    ]);
     const cartProducts = { products: [], total: 0.0 };
 
     cartData.products.forEach((cartProduct) => {
@@ -61,28 +65,28 @@ class Cart {
   }
 }
 
-const getCartDataFromFile = () => {
-  return new Promise((resolve, rejects) => {
-    fs.readFile(path.join(rootDirName, "data", "cart.json"), (err, data) => {
-      let cartData = { products: [] };
-      if (!err) {
-        cartData = JSON.parse(data);
-      }
-      resolve(cartData);
-    });
-  });
+const getCartDataFromFile = async () => {
+  let cartData = { products: [] };
+  let fileName = getFileName();
+  try {
+    let data = await fs.readFile(fileName);
+    cartData = JSON.parse(data);
+  } catch (error) {}
+
+  return cartData;
 };
 
-const saveCartDataToFile = (cartData) => {
-  return new Promise((resolve, rejects) => {
-    fs.writeFile(
-      path.join(rootDirName, "data", "cart.json"),
-      JSON.stringify(cartData),
-      (err) => {
-        resolve();
-      }
-    );
-  });
+const saveCartDataToFile = async (cartData) => {
+  let fileName = getFileName();
+  try {
+    await fs.writeFile(fileName, JSON.stringify(cartData));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getFileName = () => {
+  return path.join(rootDirName, "data", "cart.json");
 };
 
 module.exports = Cart;

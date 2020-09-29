@@ -1,5 +1,5 @@
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs").promises;
 
 const rootDirName = require("../utils/path");
 
@@ -54,31 +54,28 @@ class Product {
   }
 }
 
-const getProductsFromFile = () => {
-  return new Promise((resolve, rejects) => {
-    fs.readFile(
-      path.join(rootDirName, "data", "products.json"),
-      (err, data) => {
-        let products = [];
-        if (!err) {
-          products = JSON.parse(data);
-        }
-        resolve(products);
-      }
-    );
-  });
+const getProductsFromFile = async () => {
+  let products = [];
+  let fileName = getFileName();
+  try {
+    let data = await fs.readFile(fileName);
+    products = JSON.parse(data);
+  } catch (error) {}
+
+  return products;
 };
 
-const saveProductsToFile = (products) => {
-  return new Promise((resolve, rejects) => {
-    fs.writeFile(
-      path.join(rootDirName, "data", "products.json"),
-      JSON.stringify(products),
-      (err) => {
-        resolve();
-      }
-    );
-  });
+const saveProductsToFile = async (products) => {
+  let fileName = getFileName();
+  try {
+    await fs.writeFile(fileName, JSON.stringify(products));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getFileName = () => {
+  return path.join(rootDirName, "data", "products.json");
 };
 
 const getRandomNumber = (start, end) => {

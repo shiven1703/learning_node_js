@@ -1,5 +1,5 @@
 const path = require("path");
-const fs = require("fs");
+const fs = require("fs").promises;
 
 const rootDirName = require("../utils/path");
 
@@ -37,28 +37,28 @@ class User {
   }
 }
 
-const getAllUsersFromFile = () => {
-  return new Promise((resolve, rejects) => {
-    fs.readFile(path.join(rootDirName, "data", "users.json"), (err, data) => {
-      let users = [];
-      if (!err) {
-        users = JSON.parse(data);
-      }
-      resolve(users);
-    });
-  });
+const getAllUsersFromFile = async () => {
+  let users = [];
+  let fileName = getFileName();
+  try {
+    let data = await fs.readFile(fileName);
+    users = JSON.parse(data);
+  } catch (error) {}
+
+  return users;
 };
 
-const writeAllUsersToFile = (users) => {
-  return new Promise((resolve, rejects) => {
-    fs.writeFile(
-      path.join(rootDirName, "data", "users.json"),
-      JSON.stringify(users),
-      (err) => {
-        resolve();
-      }
-    );
-  });
+const writeAllUsersToFile = async (users) => {
+  let fileName = getFileName();
+  try {
+    await fs.writeFile(fileName, JSON.stringify(users));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getFileName = () => {
+  return path.join(rootDirName, "data", "users.json");
 };
 
 module.exports = User;
