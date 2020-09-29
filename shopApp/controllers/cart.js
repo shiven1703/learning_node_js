@@ -12,8 +12,7 @@ exports.getCartPage = async (req, res) => {
 
 exports.addProductToCart = async (req, res) => {
   let productId = Number.parseInt(req.params.productId);
-  let productPrice = Number.parseFloat(req.body.productPrice);
-  await Cart.addProduct(productId, productPrice);
+  await Cart.addProduct(productId);
   res.redirect("/cart");
 };
 
