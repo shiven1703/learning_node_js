@@ -7,11 +7,9 @@ const { resolve } = require("path");
 
 class Cart {
   static async addProduct(productId) {
-    const [cartData, productIndex] = await Promise.all([
-      getCartDataFromFile(),
-      // checking if product is already present in cart or not
-      Cart.getProductIndexById(productId),
-    ]);
+    const cartData = await getCartDataFromFile();
+    const productIndex = await Cart.getProductIndexById(productId);
+
     if (productIndex === -1) {
       cartData.products.push({ pid: productId, qty: 1 });
     } else {
