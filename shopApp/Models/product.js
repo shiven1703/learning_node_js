@@ -1,85 +1,66 @@
-const path = require("path");
-const fs = require("fs").promises;
-
-const rootDirName = require("../utils/path");
+const db = require("./../utils/database");
 
 class Product {
   constructor(productName, productDescription, price) {
-    this.productId = getRandomNumber(0, 1000);
     this.productName = productName;
     this.productDescription = productDescription;
     this.price = price;
   }
 
   async save() {
-    return new Promise(async (resolve, rejects) => {
-      let existingProducts = await getProductsFromFile();
-      existingProducts.push(this);
-      resolve(existingProducts);
-    }).then(async (existingProductList) => {
-      await saveProductsToFile(existingProductList);
-    });
+    try {
+      const query =
+        "INSERT INTO products(`productName`, `productDescription`, `price`) VALUES (? , ?, ?);";
+      await db.execute(query, [
+        this.productName,
+        this.productDescription,
+        this.price,
+      ]);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   static async update(pid, productName, productDescription, price) {
-    const products = await getProductsFromFile();
-    const updatedProducts = products.map((product) => {
-      if (product.productId === pid) {
-        product.productName = productName;
-        product.productDescription = productDescription;
-        product.price = price;
-      }
-      return product;
-    });
-    await saveProductsToFile(updatedProducts);
+    try {
+      const query =
+        "UPDATE products SET `productName` = ?, `productDescription` = ?, `price` = ? WHERE `productId` = ?;";
+      await db.execute(query, [productName, productDescription, price, pid]);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   static async delete(pid) {
-    const products = await getProductsFromFile();
-    const updatedProducts = products.filter((product) => {
-      if (product.productId !== pid) {
-        return true;
-      }
-    });
-    await saveProductsToFile(updatedProducts);
-  }
-
-  static async getProductById(pid) {
-    let products = await getProductsFromFile();
-    return products.find((product) => product.productId === pid);
+    try {
+      const query = "DELETE FROM products WHERE `productId` = ?;";
+      await db.execute(query, [pid]);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   static async getAllProducts() {
-    return await getProductsFromFile();
+    try {
+      const query =
+        "SELECT productId, productName, productDescription, price FROM `products`;";
+      const [products, fields] = await db.execute(query);
+      return products;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async getProductById(pid) {
+    try {
+      const query =
+        "SELECT productId, `productName`, `productDescription`, `price` FROM `products` WHERE `productId` = ?";
+      const [products, fields] = await db.execute(query, [pid]);
+      return products[0];
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
-
-const getProductsFromFile = async () => {
-  let products = [];
-  let fileName = getFileName();
-  try {
-    let data = await fs.readFile(fileName);
-    products = JSON.parse(data);
-  } catch (error) {}
-
-  return products;
-};
-
-const saveProductsToFile = async (products) => {
-  let fileName = getFileName();
-  try {
-    await fs.writeFile(fileName, JSON.stringify(products));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const getFileName = () => {
-  return path.join(rootDirName, "data", "products.json");
-};
-
-const getRandomNumber = (start, end) => {
-  return Math.floor(Math.random() * (start - end + 1)) + end;
-};
 
 module.exports = Product;
