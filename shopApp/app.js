@@ -10,13 +10,16 @@ const shopRoutes = require("./routes/shop");
 const rootDirName = require("./utils/path");
 
 const app = express();
+
+// template engin config
 app.set("view engine", "ejs");
 app.set("views", "views");
-// setting up public folder as a static
-app.use(express.static(path.join(rootDirName, "public")));
-// setting up body parser (extended: to choose between querystring lib or qs lib to parse the data)
-app.use(bodyParser.urlencoded({ extended: false }));
 
+// public folder and bodyParser config
+app.use(express.static(path.join(rootDirName, "public")));
+app.use(bodyParser.urlencoded({ extended: false })); // setting up body parser (extended: true || false || - to choose between 'querystring' lib or 'qs' lib to parse the data)
+
+// routes
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

@@ -1,90 +1,43 @@
-const fs = require("fs").promises;
-const path = require("path");
-
-const Product = require("./../Models/product");
-const rootDirName = require("../utils/path");
-const { resolve } = require("path");
+const db = require("./../utils/database");
 
 class Cart {
   static async addProduct(productId) {
-    const cartData = await getCartDataFromFile();
-    const productIndex = await Cart.getProductIndexById(productId);
-
-    if (productIndex === -1) {
-      cartData.products.push({ pid: productId, qty: 1 });
-    } else {
-      cartData.products[productIndex].qty =
-        cartData.products[productIndex].qty + 1;
+    try {
+      const query = "INSERT INTO cart(`productId`, `qty`) VALUES(?, ?);";
+      await db.execute(query, [productId, 1]);
+    } catch (error) {
+      console.log(error);
     }
-    await saveCartDataToFile(cartData);
   }
 
   static async removeProductFromCart(productId) {
-    const cartData = await getCartDataFromFile();
-    const updatedProducts = cartData.products.filter((product) => {
-      if (product.pid !== productId) {
-        return true;
-      }
-    });
-    cartData.products = updatedProducts;
-    await saveCartDataToFile(cartData);
-  }
-
-  static async getProductIndexById(productId) {
-    const cartData = await getCartDataFromFile();
-    let foundProductIndex = -1;
-    if (cartData.products.length > 0) {
-      foundProductIndex = cartData.products.findIndex(
-        (product) => product.pid === productId
-      );
+    try {
+      const query = "DELETE FROM cart WHERE productId = ? LIMIT 1";
+      await db.execute(query, [productId]);
+    } catch (error) {
+      console.log(error);
     }
-    return foundProductIndex;
   }
 
   static async getAllProductsFromCart() {
-    const [cartData, products] = await Promise.all([
-      getCartDataFromFile(),
-      Product.getAllProducts(),
-    ]);
     const cartProducts = { products: [], total: 0.0 };
-
-    cartData.products.forEach((cartProduct) => {
-      let product = products.find((p) => p.productId === cartProduct.pid);
-      if (product !== undefined) {
-        product.qty = cartProduct.qty;
-        cartProducts.total =
-          cartProducts.total +
-          cartProduct.qty * Number.parseFloat(product.price);
-        cartProducts.products.push(product);
+    try {
+      const query =
+        "SELECT products.productName, cart.productId, COUNT(qty) AS `qty`, products.price FROM cart INNER JOIN products ON cart.productId = products.productId GROUP BY cart.productID;";
+      const [rows, fields] = await db.execute(query);
+      if (rows.length > 0) {
+        cartProducts.products = rows;
+        rows.forEach((row) => {
+          cartProducts.total =
+            cartProducts.total +
+            Number.parseFloat(row.price) * Number.parseFloat(row.qty);
+        });
       }
-    });
-
+    } catch (error) {
+      console.log(error);
+    }
     return cartProducts;
   }
 }
-
-const getCartDataFromFile = async () => {
-  let cartData = { products: [] };
-  let fileName = getFileName();
-  try {
-    let data = await fs.readFile(fileName);
-    cartData = JSON.parse(data);
-  } catch (error) {}
-
-  return cartData;
-};
-
-const saveCartDataToFile = async (cartData) => {
-  let fileName = getFileName();
-  try {
-    await fs.writeFile(fileName, JSON.stringify(cartData));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const getFileName = () => {
-  return path.join(rootDirName, "data", "cart.json");
-};
 
 module.exports = Cart;
