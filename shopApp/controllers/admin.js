@@ -5,43 +5,80 @@ exports.getAddProductPage = (req, res) => {
 };
 
 exports.getAdminProductPage = async (req, res) => {
-  const products = await Product.getAllProducts();
-  res.render("admin/products", {
-    pageTitle: "Admin Products",
-    productList: products,
-  });
+  try {
+    const products = await Product.findAll();
+    res.render("admin/products", {
+      pageTitle: "Admin Products",
+      productList: products,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.getEditProductPage = async (req, res) => {
-  let productId = Number.parseInt(req.params.productId);
-  const p = await Product.getProductById(productId);
-  res.render("admin/editProducts.ejs", {
-    pageTitle: "Edit Products",
-    product: p,
-  });
+  try {
+    let productId = Number.parseInt(req.params.productId);
+    const p = await Product.findByPk(productId);
+    res.render("admin/editProducts.ejs", {
+      pageTitle: "Edit Products",
+      product: p,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.addProduct = async (req, res) => {
-  const product = new Product(
-    req.body.productName,
-    req.body.productDescription,
-    req.body.price
-  );
-  await product.save();
+  const newProductName = req.body.productName;
+  const newProductDescription = req.body.productDescription;
+  const newProductPrice = req.body.price;
+  try {
+    await Product.create({
+      productName: newProductName,
+      productDescription: newProductDescription,
+      price: newProductPrice,
+    });
+  } catch (error) {
+    console.log(error);
+  }
   res.status(301).redirect("/");
 };
 
 exports.updateProduct = async (req, res) => {
-  let productId = Number.parseInt(req.params.productId);
-  let productName = req.body.productName;
-  let productDescription = req.body.productDescription;
-  let price = Number.parseFloat(req.body.price);
-  await Product.update(productId, productName, productDescription, price);
+  try {
+    let productId = Number.parseInt(req.params.productId);
+    let updatedProductName = req.body.productName;
+    let updatedProductDescription = req.body.productDescription;
+    let updatedProductPrice = Number.parseFloat(req.body.price);
+    await Product.update(
+      {
+        productName: updatedProductName,
+        productDescription: updatedProductDescription,
+        price: updatedProductPrice,
+      },
+      {
+        where: {
+          productId: productId,
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
   res.redirect("/");
 };
 
 exports.deleteProduct = async (req, res) => {
-  let productId = Number.parseInt(req.params.productId);
-  await Product.delete(productId);
+  try {
+    let productId = Number.parseInt(req.params.productId);
+    await Product.destroy({
+      where: {
+        productId: productId,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
   res.redirect("/admin/products");
 };

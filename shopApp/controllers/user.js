@@ -13,16 +13,39 @@ exports.getErrorPage = (req, res) => {
 };
 
 exports.auth = async (req, res) => {
-  let isRegistered = await User.authenticate(req.body.email, req.body.password);
-  if (isRegistered === true) {
-    res.status(301).redirect("/");
-  } else {
-    res.status(301).redirect("/user/error");
+  try {
+    const userEmail = req.body.email;
+    const userPassword = req.body.password;
+
+    const user = await User.findOne({
+      where: {
+        email: userEmail,
+        password: userPassword,
+      },
+    });
+
+    if (user !== null) {
+      res.status(301).redirect("/");
+    } else {
+      res.status(301).redirect("/user/error");
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
 exports.registerNewUser = async (req, res) => {
-  const newUser = new User(req.body.name, req.body.email, req.body.password);
-  await newUser.save();
+  try {
+    const newUserName = req.body.name;
+    const newUserEmail = req.body.email;
+    const newUserPassword = req.body.password;
+    await User.create({
+      name: newUserName,
+      email: newUserEmail,
+      password: newUserPassword,
+    });
+  } catch (error) {
+    console.log(error);
+  }
   res.status(301).redirect("/");
 };

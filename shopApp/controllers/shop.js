@@ -1,16 +1,24 @@
 const Product = require("../Models/product");
 
 exports.getShopHomePage = async (req, res) => {
-  const products = await Product.getAllProducts();
-  res.render("shop/index", { pageTitle: "Home", productList: products });
+  try {
+    const products = await Product.findAll();
+    res.render("shop/index", { pageTitle: "Home", productList: products });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.getProductsPage = async (req, res) => {
-  const products = await Product.getAllProducts();
-  res.render("shop/productList", {
-    pageTitle: "Products",
-    productList: products,
-  });
+  try {
+    const products = await Product.findAll();
+    res.render("shop/productList", {
+      pageTitle: "Products",
+      productList: products,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.getOrdersPage = (req, res) => {
