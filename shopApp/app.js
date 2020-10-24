@@ -8,6 +8,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const rootDirName = require("./utils/path");
+const db = require("./utils/database");
 
 const app = express();
 
@@ -24,6 +25,13 @@ app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
-app.listen(5000, () => {
-  console.log("Server Started...");
-});
+// perform database sync and start the server
+db.sync()
+  .then((result) => {
+    app.listen(5000, () => {
+      console.log("Server Started...");
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
