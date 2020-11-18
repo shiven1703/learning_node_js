@@ -17,13 +17,8 @@ exports.auth = async (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
 
-    const user = await User.findOne({
-      where: {
-        email: userEmail,
-        password: userPassword,
-      },
-    });
-
+    const user = await User.authenticate(userEmail, userPassword);
+    console.log(user);
     if (user !== null) {
       res.status(301).redirect("/");
     } else {
@@ -36,14 +31,13 @@ exports.auth = async (req, res) => {
 
 exports.registerNewUser = async (req, res) => {
   try {
-    const newUserName = req.body.name;
-    const newUserEmail = req.body.email;
-    const newUserPassword = req.body.password;
-    await User.create({
-      name: newUserName,
-      email: newUserEmail,
-      password: newUserPassword,
-    });
+    const name = req.body.name;
+    const password = req.body.password;
+    const email = req.body.email;
+
+    const newUser = new User(name, password, email);
+    await newUser.save();
+
   } catch (error) {
     console.log(error);
   }
