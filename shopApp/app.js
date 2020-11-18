@@ -4,11 +4,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 // custom imports
 const userRoutes = require("./routes/user");
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
+// const adminRoutes = require("./routes/admin");
+// const shopRoutes = require("./routes/shop");
 
 const rootDirName = require("./utils/path");
-const db = require("./utils/database");
+const { mongoConnect } = require("./utils/database");
+
 
 const app = express();
 
@@ -22,16 +23,13 @@ app.use(bodyParser.urlencoded({ extended: false })); // setting up body parser (
 
 // routes
 app.use("/user", userRoutes);
-app.use("/admin", adminRoutes);
-app.use(shopRoutes);
+// app.use("/admin", adminRoutes);
+// app.use(shopRoutes);
 
-// perform database sync and start the server
-db.sync()
-  .then((result) => {
-    app.listen(5000, () => {
-      console.log("Server Started...");
-    });
-  })
-  .catch((error) => {
-    console.log(error);
+mongoConnect().then((result) => {
+  app.listen(5000, () => {
+    console.log("Server started...");
   });
+}).catch((error) => {
+  console.log(error);
+});
