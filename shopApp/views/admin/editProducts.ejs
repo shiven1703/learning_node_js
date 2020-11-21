@@ -13,7 +13,7 @@
 
     <div class="row justify-content-center">
       <div class="col-md-6 mt-5">
-        <form action="/admin/updateProduct/<%= product.productId %>" method="POST">
+        <form action="/admin/updateProduct/<%= product._id %>" method="POST">
           <div class="form-group">
             <label for="productName">Product Name</label>
             <input
@@ -44,6 +44,7 @@
               placeholder="Amount"
               id="price"
               name="price"
+              step="any"
               value="<%= product.price %>"
             />
           </div>

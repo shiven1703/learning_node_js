@@ -1,28 +1,41 @@
-const db = require("./../utils/database");
-const Cart = require("./../Models/cart");
+const mongodb = require("mongodb");
+const Product = require("../Models/product");
+
+const User = require("./../Models/user");
 
 exports.getCartPage = async (req, res) => {
-  const [cart, metadata] = await db.query(
-    "select cart.productId, products.productName, SUM(cart.qty) AS qty, (SUM(cart.qty) * products.price) AS price from cart left join products on cart.productId = products.productId group by cart.productId;"
-  );
+  const user = await User.getUserById(req.user._id)
   let total = 0;
-  cart.forEach((product) => {
-    total = total + product.price;
-  });
+  cartItems = [];
+
+  if (user.cart !== undefined) {
+    cartItems = user.cart.items;
+    user.cart.items.forEach((item) => {
+      let price = Number.parseFloat(item.price);
+      let qty = Number.parseInt(item.qty);
+      total = total + Number.parseFloat(price * qty);
+    });
+  }
   res.render("shop/cart", {
     pageTitle: "Cart",
-    productList: cart,
+    productList: cartItems,
     cartTotal: total,
   });
 };
 
 exports.addProductToCart = async (req, res) => {
   try {
-    let productId = Number.parseInt(req.params.productId);
-    await Cart.create({
-      productId: productId,
-      qty: 1,
-    });
+    const productId = req.params.productId;
+    const productName = req.body.productName;
+    const productDescription = req.body.productDescription;
+    const productPrice = req.body.price;
+    const img_url = req.body.img_url;
+    const sellerId = mongodb.ObjectID(req.body.sellerId);
+    const userId = req.user._id;
+
+    const product = new Product(productName, productDescription, productPrice, img_url, sellerId);
+    await User.addToCart(productId, product, userId);
+
     res.redirect("/cart");
   } catch (error) {
     console.log(error);
@@ -30,12 +43,7 @@ exports.addProductToCart = async (req, res) => {
 };
 
 exports.removeFromCart = async (req, res) => {
-  let productId = Number.parseInt(req.params.productId);
-  await Cart.destroy({
-    where: {
-      productId: productId,
-    },
-    limit: 1,
-  });
+  let productId = req.params.productId;
+  await User.removeFromCart(productId, req.user._id);
   res.redirect("/cart");
 };

@@ -6,7 +6,7 @@ exports.getAddProductPage = (req, res) => {
 
 exports.getAdminProductPage = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.getAllProducts();
     res.render("admin/products", {
       pageTitle: "Admin Products",
       productList: products,
@@ -18,8 +18,8 @@ exports.getAdminProductPage = async (req, res) => {
 
 exports.getEditProductPage = async (req, res) => {
   try {
-    let productId = Number.parseInt(req.params.productId);
-    const p = await Product.findByPk(productId);
+    let productId = req.params.productId;
+    const p = await Product.getProductById(productId);
     res.render("admin/editProducts.ejs", {
       pageTitle: "Edit Products",
       product: p,
@@ -30,15 +30,15 @@ exports.getEditProductPage = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
-  const newProductName = req.body.productName;
-  const newProductDescription = req.body.productDescription;
-  const newProductPrice = req.body.price;
+  const productName = req.body.productName;
+  const productDescription = req.body.productDescription;
+  const productPrice = req.body.price;
+  const sellerId = req.user._id;
+
   try {
-    await Product.create({
-      productName: newProductName,
-      productDescription: newProductDescription,
-      price: newProductPrice,
-    });
+    const product = new Product(productName, productDescription, productPrice, null, sellerId);
+    await product.save();
+
   } catch (error) {
     console.log(error);
   }
@@ -47,22 +47,11 @@ exports.addProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    let productId = Number.parseInt(req.params.productId);
+    let productId = req.params.productId;
     let updatedProductName = req.body.productName;
     let updatedProductDescription = req.body.productDescription;
     let updatedProductPrice = Number.parseFloat(req.body.price);
-    await Product.update(
-      {
-        productName: updatedProductName,
-        productDescription: updatedProductDescription,
-        price: updatedProductPrice,
-      },
-      {
-        where: {
-          productId: productId,
-        },
-      }
-    );
+    await Product.updateProduct(productId, updatedProductName, updatedProductDescription, updatedProductPrice);
   } catch (error) {
     console.log(error);
   }
@@ -71,12 +60,8 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    let productId = Number.parseInt(req.params.productId);
-    await Product.destroy({
-      where: {
-        productId: productId,
-      },
-    });
+    let productId = req.params.productId;
+    await Product.deleteProduct(productId);
   } catch (error) {
     console.log(error);
   }

@@ -30,8 +30,8 @@
                   <h5 class="mt-4"><%= product.price %>/-</h5>
                 </div>
                 <div class="align-items-right">
-                  <a href="/admin/editProduct/<%= product.productId %>" class="btn btn-success mt-3"><i class="fas fa-shopping-cart"></i> Edit</a>
-                  <form action="/admin/deleteProduct/<%= product.productId %>" method="POST" style="display: inline;">
+                  <a href="/admin/editProduct/<%= product._id %>" class="btn btn-success mt-3"><i class="fas fa-shopping-cart"></i> Edit</a>
+                  <form action="/admin/deleteProduct/<%= product._id %>" method="POST" style="display: inline;">
                     <button class="btn btn-danger mt-3" type="submit">Delete</button>
                   </form>
                 </div>

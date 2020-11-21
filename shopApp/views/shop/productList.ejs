@@ -29,7 +29,7 @@
                 <div class="price text-success">
                   <h5 class="mt-4"><%= product.price %>/-</h5>
                 </div>
-                <form action="/addToCart/<%= product.productId %>" method="POST">
+                <form action="/addToCart/<%= product._id %>" method="POST">
                   <button class="btn btn-danger mt-3">Add to Cart</button>
                   <input type="hidden" name="productPrice" value="<%= product.price %>">
                 </form>

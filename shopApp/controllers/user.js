@@ -18,7 +18,6 @@ exports.auth = async (req, res) => {
     const userPassword = req.body.password;
 
     const user = await User.authenticate(userEmail, userPassword);
-    console.log(user);
     if (user !== null) {
       res.status(301).redirect("/");
     } else {
