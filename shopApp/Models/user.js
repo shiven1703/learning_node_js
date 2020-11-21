@@ -30,23 +30,26 @@ class User {
     }
   }
 
-  static async addToCart(productId, product, userid) {
+  static async addToCart(pId, user) {
     try {
       const collection = getDb().collection("users");
-      const user = await collection.findOne({ _id: mongodb.ObjectID(userid) });
       if (user !== null) {
         if (user.cart === undefined) {
-          await collection.updateOne({ _id: mongodb.ObjectID(userid) }, { $push: { "cart.items": { ...product, qty: 1, _id: mongodb.ObjectID(productId) } } });
+          await collection.updateOne({ _id: mongodb.ObjectID(user._id) }, { $set: { "cart.items": [{ productId: mongodb.ObjectID(pId), qty: 1 }] } });
         } else {
-          const existingProduct = user.cart.items.find((item) => {
-            return item._id == productId;
+          const updatedCart = user.cart.items;
+          const existingItemIndex = updatedCart.findIndex((item) => {
+            if (item.productId == pId) {
+              return item;
+            }
           });
 
-          if (existingProduct) {
-            await collection.updateOne({ "cart.items": { $elemMatch: { _id: mongodb.ObjectID(existingProduct._id) } } }, { $inc: { "cart.items.$.qty": 1 } });
+          if (existingItemIndex != -1) {
+            updatedCart[existingItemIndex].qty = updatedCart[existingItemIndex].qty + 1;
           } else {
-            await collection.updateOne({ _id: mongodb.ObjectID(userid) }, { $push: { "cart.items": { ...product, qty: 1, _id: mongodb.ObjectID(productId) } } });
+            updatedCart.push({ productId: mongodb.ObjectID(pId), qty: 1 });
           }
+          await collection.updateOne({ _id: mongodb.ObjectID(user._id) }, { $set: { "cart.items": updatedCart } });
         }
       }
     } catch (error) {
@@ -54,18 +57,36 @@ class User {
     }
   }
 
-  static async removeFromCart(productId, userid) {
+  static async removeFromCart(pId, user) {
     try {
       const collection = getDb().collection("users");
-      const user = await collection.findOne({ _id: mongodb.ObjectID(userid) });
       if (user !== null) {
         if (user.cart !== undefined) {
-          await collection.updateOne({ _id: mongodb.ObjectID(userid) }, { $pull: { "cart.items": { _id: mongodb.ObjectID(productId) } } });
+          await collection.updateOne({ _id: mongodb.ObjectID(user._id) }, { $pull: { "cart.items": { productId: mongodb.ObjectID(pId) } } });
         }
       }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  static async getCartItems(user) {
+    const productIds = user.cart.items.map((item) => {
+      return item.productId;
+    });
+
+    let cartProducts = await getDb().collection("products").find({ _id: { $in: productIds } }).toArray();
+
+    cartProducts = cartProducts.map((product) => {
+      let productWithQty = user.cart.items.find((item) => {
+        return item.productId.toString() === product._id.toString();
+      });
+
+      product.qty = productWithQty.qty;
+      return product;
+    });
+    return cartProducts;
+
   }
 
   static async getUserById(userid) {
