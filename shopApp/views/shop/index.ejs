@@ -40,12 +40,6 @@
                   <h5 class="mt-4"><%= product.price %></h5>
                 </div>
                 <form action="/addToCart/<%= product._id %>" method="POST">
-                  <input type="hidden" name="productName" value="<%= product.productName %>">
-                  <input type="hidden" name="productDescription" value="<%= product.productDescription %>">
-                  <input type="hidden" name="price" value="<%= product.price %>">
-                  <input type="hidden" name="img_url" value="<%= product.img_url %>">
-                  <input type="hidden" name="sellerId" value="<%= product.sellerId %>">
-                  
                   <button class="btn btn-danger mt-3">Add to Cart</button>
                 </form>
               </div>
