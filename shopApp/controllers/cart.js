@@ -4,18 +4,19 @@ const Product = require("../Models/product");
 const User = require("./../Models/user");
 
 exports.getCartPage = async (req, res) => {
-  const user = await User.getUserById(req.user._id)
+  const user = req.user;
   let total = 0;
   cartItems = [];
 
   if (user.cart !== undefined) {
-    cartItems = user.cart.items;
-    user.cart.items.forEach((item) => {
+    cartItems = await User.getCartItems(user);
+    cartItems.forEach((item) => {
       let price = Number.parseFloat(item.price);
       let qty = Number.parseInt(item.qty);
       total = total + Number.parseFloat(price * qty);
     });
   }
+
   res.render("shop/cart", {
     pageTitle: "Cart",
     productList: cartItems,
@@ -26,16 +27,7 @@ exports.getCartPage = async (req, res) => {
 exports.addProductToCart = async (req, res) => {
   try {
     const productId = req.params.productId;
-    const productName = req.body.productName;
-    const productDescription = req.body.productDescription;
-    const productPrice = req.body.price;
-    const img_url = req.body.img_url;
-    const sellerId = mongodb.ObjectID(req.body.sellerId);
-    const userId = req.user._id;
-
-    const product = new Product(productName, productDescription, productPrice, img_url, sellerId);
-    await User.addToCart(productId, product, userId);
-
+    await User.addToCart(productId, req.user);
     res.redirect("/cart");
   } catch (error) {
     console.log(error);
@@ -44,6 +36,6 @@ exports.addProductToCart = async (req, res) => {
 
 exports.removeFromCart = async (req, res) => {
   let productId = req.params.productId;
-  await User.removeFromCart(productId, req.user._id);
+  await User.removeFromCart(productId, req.user);
   res.redirect("/cart");
 };
