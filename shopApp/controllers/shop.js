@@ -1,4 +1,5 @@
 const Product = require("../Models/product");
+const User = require("../Models/user");
 
 exports.getShopHomePage = async (req, res) => {
   try {
@@ -21,10 +22,12 @@ exports.getProductsPage = async (req, res) => {
   }
 };
 
-exports.getOrdersPage = (req, res) => {
-  res.render("shop/orders", { pageTitle: "Orders" });
+exports.getOrdersPage = async (req, res) => {
+  const orders = await User.getOrders(req.user);
+  res.render("shop/orders", {
+    pageTitle: "Orders",
+    orderList: orders,
+  });
 };
 
-exports.getCheckoutPage = (req, res) => {
-  res.render("shop/checkout", { pageTitle: "Checkout" });
-};
+
