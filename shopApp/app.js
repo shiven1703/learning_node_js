@@ -18,6 +18,7 @@ const { nextTick } = require("process");
 
 const app = express();
 
+
 // template engin config
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -26,7 +27,7 @@ app.set("views", "views");
 app.use(express.static(path.join(rootDirName, "public")));
 app.use(bodyParser.urlencoded({ extended: false })); // setting up body parser (extended: true || false || - to choose between 'querystring' lib or 'qs' lib to parse the data)
 
-// routes
+// dummy user
 app.use(async (req, res, next) => {
   try {
     req.user = await getDb().collection("users").findOne({ _id: mongodb.ObjectId("5fb4d3e024022020d0986ac1") });
