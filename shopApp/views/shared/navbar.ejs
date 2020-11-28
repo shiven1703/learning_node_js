@@ -1,0 +1,49 @@
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">Shop</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbarResponsive"
+      aria-controls="navbarResponsive"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item <%= pageTitle === 'Home' ? 'active' : '' %>">
+          <a class="nav-link" href="/"> Home </a>
+        </li>
+        <li class="nav-item <%= pageTitle === 'Products' ? 'active' : '' %>">
+          <a class="nav-link" href="/products"> Products </a>
+        </li>
+        <li
+          class="nav-item <%= pageTitle === 'Add Products' ? 'active' : '' %>"
+        >
+          <a class="nav-link" href="/admin/addProduct">Add Products</a>
+        </li>
+        <li
+          class="nav-item <%= pageTitle === 'Admin Products' ? 'active' : '' %>"
+        >
+          <a class="nav-link" href="/admin/products">Admin Products</a>
+        </li>
+        <li class="nav-item <%= pageTitle === 'Cart' ? 'active' : '' %>">
+          <a class="nav-link" href="/cart">Cart</a>
+        </li>
+        <li class="nav-item <%= pageTitle === 'Orders' ? 'active' : '' %>">
+          <a class="nav-link" href="/orders">Orders</a>
+        </li>
+        <li class="nav-item <%= pageTitle === 'Login' ? 'active' : '' %>">
+          <a class="nav-link" href="/user/login">Login</a>
+        </li>
+        <li class="nav-item <%= pageTitle === 'Register' ? 'active' : '' %>">
+          <a class="nav-link" href="/user/register">Register</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

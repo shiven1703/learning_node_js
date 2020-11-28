@@ -1,0 +1,39 @@
+<%- include('../shared/header.ejs'); %>
+  </head>
+
+  <body>
+    <%- include('../shared/navbar.ejs'); %>
+    <!-- Page Content -->
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+        </div>
+      </div>
+    </div>
+    
+    <div class="container">
+      <% if(orderList.length > 0) { %>
+      <div class="row">
+        <% for(let order of orderList) { %>
+        <div class="col-md-4 mt-4">
+          <div class="card">
+            <h6 style="text-align: center;">Order Id: <%= order._id %></h6>
+            <div class="card-body">
+              <ul>
+              <% for(let orderItem of order.items) { %>
+                <li><%= orderItem.productName %> (<%= orderItem.qty %>)</li>
+              <% } %>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+  
+    <!-- Bootstrap core JavaScript -->
+    <script src="/js/jquery.slim.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
