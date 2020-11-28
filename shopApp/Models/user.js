@@ -89,6 +89,10 @@ class User {
 
   }
 
+  static async emptyCart(user) {
+    await getDb().collection("users").updateOne({ _id: new mongodb.ObjectID(user._id) }, { $unset: { cart: "" } });
+  }
+
   static async getUserById(userid) {
     try {
       const user = getDb().collection("users").findOne({ _id: mongodb.ObjectID(userid) });
@@ -97,6 +101,27 @@ class User {
       console.log(error);
     }
   }
+
+  static async addOrder(user) {
+    try {
+      let cartItems = [];
+
+      if (user.cart != undefined) {
+        cartItems = await User.getCartItems(user);
+      }
+      await getDb().collection("orders").insertOne({ items: cartItems, user: { _id: new mongodb.ObjectID(user._id), name: user.name } });
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  static async getOrders(user) {
+    const orders = await getDb().collection("orders").find({ "user._id": new mongodb.ObjectID(user._id) }).toArray();
+    return orders;
+  }
+
+
 }
 
 module.exports = User;
