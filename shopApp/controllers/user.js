@@ -17,8 +17,8 @@ exports.auth = async (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
 
-    const user = await User.authenticate(userEmail, userPassword);
-    if (user !== null) {
+    const isRegisterdUser = await User.authenticate(userEmail, userPassword);
+    if (isRegisterdUser === true) {
       res.status(301).redirect("/");
     } else {
       res.status(301).redirect("/user/error");
@@ -30,11 +30,11 @@ exports.auth = async (req, res) => {
 
 exports.registerNewUser = async (req, res) => {
   try {
-    const name = req.body.name;
-    const password = req.body.password;
-    const email = req.body.email;
+    const newuserName = req.body.name;
+    const newuserpassword = req.body.password;
+    const newuseremail = req.body.email;
 
-    const newUser = new User(name, password, email);
+    const newUser = new User({ name: newuserName, password: newuserpassword, email: newuseremail });
     await newUser.save();
 
   } catch (error) {

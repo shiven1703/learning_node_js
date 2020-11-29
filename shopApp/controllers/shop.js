@@ -3,7 +3,7 @@ const User = require("../Models/user");
 
 exports.getShopHomePage = async (req, res) => {
   try {
-    const products = await Product.getAllProducts();
+    const products = await Product.find();
     res.render("shop/index", { pageTitle: "Home", productList: products });
   } catch (error) {
     console.log(error);
@@ -12,7 +12,7 @@ exports.getShopHomePage = async (req, res) => {
 
 exports.getProductsPage = async (req, res) => {
   try {
-    const products = await Product.getAllProducts();
+    const products = await Product.find();
     res.render("shop/productList", {
       pageTitle: "Products",
       productList: products,
@@ -29,5 +29,3 @@ exports.getOrdersPage = async (req, res) => {
     orderList: orders,
   });
 };
-
-

@@ -1,19 +1,15 @@
-const mongodb = require("mongodb");
-const Product = require("../Models/product");
-const { getDb } = require("../utils/database");
-
+const mongoose = require("mongoose");
 const User = require("./../Models/user");
 
 exports.getCartPage = async (req, res) => {
-  const user = req.user;
+  let user = req.user;
   let total = 0;
   cartItems = [];
-
 
   if (user.cart !== undefined) {
     cartItems = await User.getCartItems(user);
     cartItems.forEach((item) => {
-      let price = Number.parseFloat(item.price);
+      let price = Number.parseFloat(item.product.price);
       let qty = Number.parseInt(item.qty);
       total = total + Number.parseFloat(price * qty);
     });

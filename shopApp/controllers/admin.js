@@ -6,7 +6,7 @@ exports.getAddProductPage = (req, res) => {
 
 exports.getAdminProductPage = async (req, res) => {
   try {
-    const products = await Product.getAllProducts();
+    const products = await Product.find();
     res.render("admin/products", {
       pageTitle: "Admin Products",
       productList: products,
@@ -19,7 +19,7 @@ exports.getAdminProductPage = async (req, res) => {
 exports.getEditProductPage = async (req, res) => {
   try {
     let productId = req.params.productId;
-    const p = await Product.getProductById(productId);
+    const p = await Product.findById(productId);
     res.render("admin/editProducts.ejs", {
       pageTitle: "Edit Products",
       product: p,
@@ -30,15 +30,20 @@ exports.getEditProductPage = async (req, res) => {
 };
 
 exports.addProduct = async (req, res) => {
-  const productName = req.body.productName;
-  const productDescription = req.body.productDescription;
-  const productPrice = req.body.price;
-  const sellerId = req.user._id;
+  const newproductName = req.body.productName;
+  const newproductDescription = req.body.productDescription;
+  const newproductPrice = req.body.price;
+  const newproductsellerId = req.user._id;
 
   try {
-    const product = new Product(productName, productDescription, productPrice, null, sellerId);
+    const product = new Product({
+      productName: newproductName,
+      productDescription: newproductDescription,
+      price: newproductPrice,
+      img_url: null,
+      sellerId: newproductsellerId,
+    });
     await product.save();
-
   } catch (error) {
     console.log(error);
   }
@@ -51,7 +56,12 @@ exports.updateProduct = async (req, res) => {
     let updatedProductName = req.body.productName;
     let updatedProductDescription = req.body.productDescription;
     let updatedProductPrice = Number.parseFloat(req.body.price);
-    await Product.updateProduct(productId, updatedProductName, updatedProductDescription, updatedProductPrice);
+    await Product.updateProductById(
+      productId,
+      updatedProductName,
+      updatedProductDescription,
+      updatedProductPrice
+    );
   } catch (error) {
     console.log(error);
   }
@@ -61,7 +71,7 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     let productId = req.params.productId;
-    await Product.deleteProduct(productId);
+    await Product.findByIdAndDelete(productId);
   } catch (error) {
     console.log(error);
   }

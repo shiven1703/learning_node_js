@@ -27,11 +27,11 @@
                   <% for(let product of productList) { %>
                     <tr>
                       <td><img src="https://dummyimage.com/50x50/55595c/fff" /></td>
-                      <td><%= product.productName %></td>
+                      <td><%= product.product.productName %></td>
                       <td class="text-center"><%= product.qty %></td>
-                      <td class="text-right"><%= product.price %>/-</td>
+                      <td class="text-right"><%= product.product.price %>/-</td>
                       <td class="text-right">
-                        <form action="/removeFromCart/<%= product._id %>" method="POST">
+                        <form action="/removeFromCart/<%= product.product._id %>" method="POST">
                           <button class="btn btn-sm btn-danger">
                             <i class="fa fa-trash"></i>
                           </button>

@@ -17,11 +17,6 @@ router.post("/addToCart/:productId", cartController.addProductToCart);
 
 router.post("/removeFromCart/:productId", cartController.removeFromCart);
 
-router.post("/checkout", cartController.checkout);
-
-
-
-
-
+// router.post("/checkout", cartController.checkout);
 
 module.exports = router;
